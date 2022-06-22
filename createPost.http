@@ -1,0 +1,6 @@
+POST http://localhost:{{$dotenv %PORT}}/posts
+Content-Type: application/json
+
+{
+  "name": "Raúl"
+}
