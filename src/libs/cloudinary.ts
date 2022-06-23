@@ -12,8 +12,12 @@ cloudinary.config({
   secure: true,
 })
 
-export const uploadImage = async (filePath: string) => {
+export const uploadImage = async ({ filePath }: { filePath: string }) => {
   return await cloudinary.uploader.upload(filePath, {
     folder: 'mern-context-crud',
   })
+}
+
+export const deleteImage = async ({ publicId }: { publicId: string }) => {
+  return await cloudinary.uploader.destroy(publicId)
 }

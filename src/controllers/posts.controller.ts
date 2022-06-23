@@ -2,7 +2,7 @@ import type { RequestHandler } from 'express'
 import type { UploadedFile } from 'express-fileupload'
 import httpStatus from 'http-status'
 import fs from 'fs-extra'
-import { uploadImage } from '../libs/cloudinary.js'
+import { deleteImage, uploadImage } from '../libs/cloudinary.js'
 import Post, { Image } from '../models/Post.js'
 
 export const getPosts: RequestHandler = async (_req, res) => {
@@ -40,7 +40,9 @@ export const createPost: RequestHandler = async (req, res) => {
     let fileToUploadTempPath: string | null = null
     if (fileToUpload) {
       fileToUploadTempPath = (fileToUpload as UploadedFile).tempFilePath
-      const { secure_url, public_id } = await uploadImage(fileToUploadTempPath)
+      const { secure_url, public_id } = await uploadImage({
+        filePath: fileToUploadTempPath,
+      })
       await fs.remove(fileToUploadTempPath)
       image = new Image({ url: secure_url, publicId: public_id })
     }
@@ -79,9 +81,16 @@ export const deletePost: RequestHandler = async (req, res) => {
   const { postId } = req.params
   try {
     const deletedPost = await Post.findByIdAndDelete(postId)
+
     if (!deletedPost) {
       return res.status(httpStatus.NOT_FOUND).send()
     }
+
+    if (deletedPost.image) {
+      const { publicId } = deletedPost.image
+      await deleteImage({ publicId })
+    }
+
     return res.status(httpStatus.OK).send()
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error)
