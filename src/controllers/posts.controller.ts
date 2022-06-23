@@ -15,7 +15,7 @@ export const getPost: Handler = async (req, res) => {
   const { postId } = req.params
   try {
     const post = await Post.findById(postId)
-    if (post === null) {
+    if (!post) {
       return res.status(httpStatus.NOT_FOUND).send()
     }
     return res.status(httpStatus.OK).send(post)
@@ -43,7 +43,7 @@ export const updatePost: Handler = async (req, res) => {
       { title, description },
       { new: true }
     )
-    if (updatedPost === null) {
+    if (!updatedPost) {
       return res.status(httpStatus.NOT_FOUND).send()
     }
     return res.status(httpStatus.OK).send()
@@ -56,7 +56,7 @@ export const deletePost: Handler = async (req, res) => {
   const { postId } = req.params
   try {
     const deletedPost = await Post.findByIdAndDelete(postId)
-    if (deletedPost === null) {
+    if (!deletedPost) {
       return res.status(httpStatus.NOT_FOUND).send()
     }
     return res.status(httpStatus.OK).send()
