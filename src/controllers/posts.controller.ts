@@ -1,6 +1,9 @@
 import type { RequestHandler } from 'express'
+import type { UploadedFile } from 'express-fileupload'
 import httpStatus from 'http-status'
-import Post from '../models/Post.js'
+import fs from 'fs-extra'
+import { uploadImage } from '../libs/cloudinary.js'
+import Post, { Image } from '../models/Post.js'
 
 export const getPosts: RequestHandler = async (_req, res) => {
   try {
@@ -26,8 +29,28 @@ export const getPost: RequestHandler = async (req, res) => {
 
 export const createPost: RequestHandler = async (req, res) => {
   const { title, description } = req.body
+
+  let fileToUpload: UploadedFile | UploadedFile[] | undefined
+  if (req.files) {
+    fileToUpload = req.files['image']
+  }
+
   try {
-    const { id } = await Post.create({ title, description })
+    let image: Image | null = null
+    let fileToUploadTempPath: string | null = null
+    if (fileToUpload) {
+      fileToUploadTempPath = (fileToUpload as UploadedFile).tempFilePath
+      const { secure_url, public_id } = await uploadImage(fileToUploadTempPath)
+      await fs.remove(fileToUploadTempPath)
+      image = new Image({ url: secure_url, publicId: public_id })
+    }
+
+    const { id } = await Post.create({
+      title,
+      description,
+      image,
+    })
+
     return res.status(httpStatus.CREATED).send(id)
   } catch (error) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error)
