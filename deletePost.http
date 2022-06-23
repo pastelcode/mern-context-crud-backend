@@ -1,0 +1,4 @@
+@postId = 62b3d0794b6ed4b0497588c4
+
+DELETE http://localhost:{{$dotenv %PORT}}/posts/{{postId}}
+Content-Type: application/json

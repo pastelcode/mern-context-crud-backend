@@ -1,0 +1,9 @@
+@postId = 62b3952831dc324faa233052
+
+PUT http://localhost:{{$dotenv %PORT}}/posts/{{postId}}
+Content-Type: application/json
+
+{
+  "title": "Un monstruo en París",
+  "description": "Una increíble película"
+}
