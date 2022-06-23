@@ -52,4 +52,15 @@ export const updatePost: Handler = async (req, res) => {
   }
 }
 
-export const deletePost: Handler = (_req, res) => res.send('Deleting post...')
+export const deletePost: Handler = async (req, res) => {
+  const { postId } = req.params
+  try {
+    const deletedPost = await Post.findByIdAndDelete(postId)
+    if (deletedPost === null) {
+      return res.status(httpStatus.NOT_FOUND).send()
+    }
+    return res.status(httpStatus.OK).send()
+  } catch (error) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send()
+  }
+}
