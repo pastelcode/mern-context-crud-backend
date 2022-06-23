@@ -8,12 +8,17 @@ const { getModelForClass, modelOptions, prop } = typegoose
     _id: false,
   },
 })
-class Image {
+export class Image {
   @prop()
-  url!: string
+  url: string
 
   @prop()
-  public_id!: string
+  publicId: string
+
+  constructor({ url, publicId }: Image) {
+    this.url = url
+    this.publicId = publicId
+  }
 }
 
 @modelOptions({
