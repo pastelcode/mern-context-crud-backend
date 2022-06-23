@@ -1,8 +1,8 @@
-import type { Handler } from 'express'
+import type { RequestHandler } from 'express'
 import httpStatus from 'http-status'
 import Post from '../models/Post.js'
 
-export const getPosts: Handler = async (_req, res) => {
+export const getPosts: RequestHandler = async (_req, res) => {
   try {
     const posts = await Post.find()
     return res.status(httpStatus.OK).send(posts)
@@ -11,7 +11,7 @@ export const getPosts: Handler = async (_req, res) => {
   }
 }
 
-export const getPost: Handler = async (req, res) => {
+export const getPost: RequestHandler = async (req, res) => {
   const { postId } = req.params
   try {
     const post = await Post.findById(postId)
@@ -24,7 +24,7 @@ export const getPost: Handler = async (req, res) => {
   }
 }
 
-export const createPost: Handler = async (req, res) => {
+export const createPost: RequestHandler = async (req, res) => {
   const { title, description } = req.body
   try {
     const { id } = await Post.create({ title, description })
@@ -34,7 +34,7 @@ export const createPost: Handler = async (req, res) => {
   }
 }
 
-export const updatePost: Handler = async (req, res) => {
+export const updatePost: RequestHandler = async (req, res) => {
   const { postId } = req.params
   const { title, description } = req.body
   try {
@@ -52,7 +52,7 @@ export const updatePost: Handler = async (req, res) => {
   }
 }
 
-export const deletePost: Handler = async (req, res) => {
+export const deletePost: RequestHandler = async (req, res) => {
   const { postId } = req.params
   try {
     const deletedPost = await Post.findByIdAndDelete(postId)
@@ -61,6 +61,6 @@ export const deletePost: Handler = async (req, res) => {
     }
     return res.status(httpStatus.OK).send()
   } catch (error) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send()
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error)
   }
 }
